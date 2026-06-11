@@ -48,12 +48,6 @@ public class AssembleTest {
         return (boolean) m.invoke(null, step, ans);
     }
 
-    private boolean callIsValidCheck() throws Exception {
-        Method m = Assemble.class.getDeclaredMethod("isValidCheck", Car.class);
-        m.setAccessible(true);
-        return (boolean) m.invoke(null, car);
-    }
-
     private void callSelectCarType(int a) throws Exception {
         Method m = Assemble.class.getDeclaredMethod("selectCarType", int.class, Car.class);
         m.setAccessible(true);
@@ -344,35 +338,35 @@ public class AssembleTest {
             void sedan_continental() throws Exception {
                 car.setCarType(CarType.SEDAN);
                 car.setBrakeSystem(BrakeSystem.CONTINENTAL);
-                assertFalse(callIsValidCheck());
+                assertFalse(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("SUV + TOYOTA 엔진 → false")
             void suv_toyota() throws Exception {
                 car.setCarType(CarType.SUV);
                 car.setEngine(Engine.TOYOTA);
-                assertFalse(callIsValidCheck());
+                assertFalse(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("Truck + WIA 엔진 → false")
             void truck_wia() throws Exception {
                 car.setCarType(CarType.TRUCK);
                 car.setEngine(Engine.WIA);
-                assertFalse(callIsValidCheck());
+                assertFalse(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("Truck + MANDO 제동장치 → false")
             void truck_mando() throws Exception {
                 car.setCarType(CarType.TRUCK);
                 car.setBrakeSystem(BrakeSystem.MANDO);
-                assertFalse(callIsValidCheck());
+                assertFalse(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("BOSCH 제동장치 + MOBIS 조향장치 → false")
             void boschBrake_mobisSteering() throws Exception {
                 car.setBrakeSystem(BrakeSystem.BOSCH);
                 car.setSteeringSystem(SteeringSystem.MOBIS);
-                assertFalse(callIsValidCheck());
+                assertFalse(CompatibilityRule.isValid(car));
             }
         }
 
@@ -384,77 +378,77 @@ public class AssembleTest {
             void sedan_gm_mando_bosch() throws Exception {
                 car.setCarType(CarType.SEDAN); car.setEngine(Engine.GM);
                 car.setBrakeSystem(BrakeSystem.MANDO); car.setSteeringSystem(SteeringSystem.BOSCH);
-                assertTrue(callIsValidCheck());
+                assertTrue(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("Sedan + GM + MANDO + MOBIS → true")
             void sedan_gm_mando_mobis() throws Exception {
                 car.setCarType(CarType.SEDAN); car.setEngine(Engine.GM);
                 car.setBrakeSystem(BrakeSystem.MANDO); car.setSteeringSystem(SteeringSystem.MOBIS);
-                assertTrue(callIsValidCheck());
+                assertTrue(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("Sedan + GM + BOSCH 제동 + BOSCH 조향 → true")
             void sedan_gm_boschBrake_boschSteering() throws Exception {
                 car.setCarType(CarType.SEDAN); car.setEngine(Engine.GM);
                 car.setBrakeSystem(BrakeSystem.BOSCH); car.setSteeringSystem(SteeringSystem.BOSCH);
-                assertTrue(callIsValidCheck());
+                assertTrue(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("Sedan + TOYOTA 엔진 → true (Sedan에 TOYOTA 허용)")
             void sedan_toyota_allowed() throws Exception {
                 car.setCarType(CarType.SEDAN); car.setEngine(Engine.TOYOTA);
                 car.setBrakeSystem(BrakeSystem.MANDO); car.setSteeringSystem(SteeringSystem.MOBIS);
-                assertTrue(callIsValidCheck());
+                assertTrue(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("Sedan + WIA 엔진 → true (Sedan에 WIA 허용)")
             void sedan_wia_allowed() throws Exception {
                 car.setCarType(CarType.SEDAN); car.setEngine(Engine.WIA);
                 car.setBrakeSystem(BrakeSystem.MANDO); car.setSteeringSystem(SteeringSystem.MOBIS);
-                assertTrue(callIsValidCheck());
+                assertTrue(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("SUV + GM + CONTINENTAL + MOBIS → true")
             void suv_gm_continental_mobis() throws Exception {
                 car.setCarType(CarType.SUV); car.setEngine(Engine.GM);
                 car.setBrakeSystem(BrakeSystem.CONTINENTAL); car.setSteeringSystem(SteeringSystem.MOBIS);
-                assertTrue(callIsValidCheck());
+                assertTrue(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("SUV + WIA 엔진 → true (SUV에 WIA 허용)")
             void suv_wia_allowed() throws Exception {
                 car.setCarType(CarType.SUV); car.setEngine(Engine.WIA);
                 car.setBrakeSystem(BrakeSystem.MANDO); car.setSteeringSystem(SteeringSystem.MOBIS);
-                assertTrue(callIsValidCheck());
+                assertTrue(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("Truck + GM + CONTINENTAL + MOBIS → true")
             void truck_gm_continental_mobis() throws Exception {
                 car.setCarType(CarType.TRUCK); car.setEngine(Engine.GM);
                 car.setBrakeSystem(BrakeSystem.CONTINENTAL); car.setSteeringSystem(SteeringSystem.MOBIS);
-                assertTrue(callIsValidCheck());
+                assertTrue(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("Truck + TOYOTA + BOSCH 세트 → true")
             void truck_toyota_bosch_bosch() throws Exception {
                 car.setCarType(CarType.TRUCK); car.setEngine(Engine.TOYOTA);
                 car.setBrakeSystem(BrakeSystem.BOSCH); car.setSteeringSystem(SteeringSystem.BOSCH);
-                assertTrue(callIsValidCheck());
+                assertTrue(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("Sedan + MANDO 제동장치 → true (Truck에만 MANDO 금지)")
             void sedan_mando_allowed() throws Exception {
                 car.setCarType(CarType.SEDAN); car.setEngine(Engine.GM);
                 car.setBrakeSystem(BrakeSystem.MANDO); car.setSteeringSystem(SteeringSystem.MOBIS);
-                assertTrue(callIsValidCheck());
+                assertTrue(CompatibilityRule.isValid(car));
             }
 
             @Test @DisplayName("SUV + MANDO 제동장치 → true (Truck에만 MANDO 금지)")
             void suv_mando_allowed() throws Exception {
                 car.setCarType(CarType.SUV); car.setEngine(Engine.GM);
                 car.setBrakeSystem(BrakeSystem.MANDO); car.setSteeringSystem(SteeringSystem.MOBIS);
-                assertTrue(callIsValidCheck());
+                assertTrue(CompatibilityRule.isValid(car));
             }
         }
     }

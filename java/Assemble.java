@@ -198,22 +198,8 @@ public class Assemble {
                 car.getSteeringSystem().name());
     }
 
-    private static boolean isValidCheck(Car car) {
-        CarType        ct  = car.getCarType();
-        Engine         eng = car.getEngine();
-        BrakeSystem    br  = car.getBrakeSystem();
-        SteeringSystem st  = car.getSteeringSystem();
-
-        if (ct == CarType.SEDAN && br == BrakeSystem.CONTINENTAL)  return false;
-        if (ct == CarType.SUV   && eng == Engine.TOYOTA)           return false;
-        if (ct == CarType.TRUCK && eng == Engine.WIA)              return false;
-        if (ct == CarType.TRUCK && br == BrakeSystem.MANDO)        return false;
-        if (br == BrakeSystem.BOSCH && st != SteeringSystem.BOSCH) return false;
-        return true;
-    }
-
     private static void runProducedCar(Car car) {
-        if (!isValidCheck(car)) {
+        if (!CompatibilityRule.isValid(car)) {
             System.out.println("자동차가 동작되지 않습니다");
             return;
         }
@@ -230,29 +216,13 @@ public class Assemble {
     }
 
     private static void testProducedCar(Car car) {
-        CarType        ct  = car.getCarType();
-        Engine         eng = car.getEngine();
-        BrakeSystem    br  = car.getBrakeSystem();
-        SteeringSystem st  = car.getSteeringSystem();
-
-        if (ct == CarType.SEDAN && br == BrakeSystem.CONTINENTAL) {
-            fail("Sedan에는 Continental제동장치 사용 불가");
-        } else if (ct == CarType.SUV && eng == Engine.TOYOTA) {
-            fail("SUV에는 TOYOTA엔진 사용 불가");
-        } else if (ct == CarType.TRUCK && eng == Engine.WIA) {
-            fail("Truck에는 WIA엔진 사용 불가");
-        } else if (ct == CarType.TRUCK && br == BrakeSystem.MANDO) {
-            fail("Truck에는 Mando제동장치 사용 불가");
-        } else if (br == BrakeSystem.BOSCH && st != SteeringSystem.BOSCH) {
-            fail("Bosch제동장치에는 Bosch조향장치 이외 사용 불가");
-        } else {
-            System.out.println("자동차 부품 조합 테스트 결과 : PASS");
-        }
-    }
-
-    private static void fail(String msg) {
-        System.out.println("자동차 부품 조합 테스트 결과 : FAIL");
-        System.out.println(msg);
+        CompatibilityRule.findViolation(car).ifPresentOrElse(
+            msg -> {
+                System.out.println("자동차 부품 조합 테스트 결과 : FAIL");
+                System.out.println(msg);
+            },
+            () -> System.out.println("자동차 부품 조합 테스트 결과 : PASS")
+        );
     }
 
     private static void delay(int ms) {
